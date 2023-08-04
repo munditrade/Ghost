@@ -1,0 +1,38 @@
+version: '2'
+services:
+    mysql:
+        image: docker.io/bitnami/mysql:8.0
+        volumes:
+            - ./mysql_data:/bitnami/mysql
+        environment:
+            - ALLOW_EMPTY_PASSWORD=yes
+            - MYSQL_USER=bn_ghost
+            - MYSQL_PASSWORD=bn_passwd
+            - MYSQL_DATABASE=bitnami_ghost
+            - MYSQL_ROOT_PASSWORD=rootpwd
+        #healthcheck:
+        #   test: ['CMD', '/opt/bitnami/scripts/mysql/healthcheck.sh']
+        #   interval: 15s
+        #   timeout: 5s
+        #   retries: 6
+    ghost:
+        build: .
+        ports:
+            - '80:2368'
+        restart: always
+        volumes:
+            - ./ghost_data:/bitnami/ghost
+        depends_on:
+            - mysql
+            #mysql:
+            #      condition: service_healthy
+        environment:
+            - ALLOW_EMPTY_PASSWORD=yes
+            - GHOST_DATABASE_HOST=mysql
+            - GHOST_DATABASE_PORT_NUMBER=3306
+            - GHOST_DATABASE_USER=bn_ghost
+            - GHOST_DATABASE_PASSWORD=bn_passwd
+            - GHOST_DATABASE_NAME=bitnami_ghost
+            - GHOST_USERNAME=fabian
+            - GHOST_PASSWORD=bitnami123
+            - GHOST_EMAIL=fabian@mundi.io
